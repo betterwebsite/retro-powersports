@@ -1,40 +1,84 @@
-//
-//    The Dark Mode System
-//
+class CS_GalleryFilter {
+	filtersSelector = '.cs-button';
+	galleriesSelector = '.cs-gallery';
+	activeClass = 'cs-active';
+	hiddenClass = 'cs-hidden';
 
-// helper functions to toggle dark mode
-function enableDarkMode() {
-	document.body.classList.add('dark-mode');
-	localStorage.setItem('theme', 'dark');
-}
-function disableDarkMode() {
-	document.body.classList.remove('dark-mode');
-	localStorage.setItem('theme', 'light');
-}
+	constructor() {
+		this.$galleries = document.querySelectorAll(this.galleriesSelector);
+		const $filters = document.querySelectorAll(this.filtersSelector);
 
-// determines a new users dark mode preferences
-function detectColorScheme() {
-	// default to the light theme
-	let theme = 'light';
+		this.onClick($filters[0]);
 
-	// check localStorage for a saved 'theme' variable. if it's there, the user has visited before, so apply the necessary theme choices
-	if (localStorage.getItem('theme')) {
-		theme = localStorage.getItem('theme');
-	}
-	// if it's not there, check to see if the user has applied dark mode preferences themselves in the browser
-	else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-		theme = 'dark';
+		for (const $filter of $filters) {
+			$filter.addEventListener('click', () => this.onClick($filter));
+		}
 	}
 
-	// if there is no preference set, the default of light will be used. apply accordingly
-	theme === 'dark' ? enableDarkMode() : disableDarkMode();
+	onClick($filter) {
+		this.filter($filter.dataset.filter);
+
+		const { activeClass } = this;
+
+		this.$activeFilter?.classList.remove(activeClass);
+		$filter.classList.add(activeClass);
+
+		this.$activeFilter = $filter;
+	}
+
+	filter(filter) {
+		const showAll = filter == 'all';
+		const { hiddenClass } = this;
+
+		for (const $gallery of this.$galleries) {
+			const show = showAll || $gallery.dataset.category == filter;
+			$gallery.classList.toggle(hiddenClass, !show);
+		}
+	}
 }
 
-// run on page load
-detectColorScheme();
+new CS_GalleryFilter();
 
-// add event listener to the dark mode button toggle
-document.getElementById('dark-mode-toggle').addEventListener('click', () => {
-	// on click, check localStorage for the dark mode value, use to apply the opposite of what's saved
-	localStorage.getItem('theme') === 'light' ? enableDarkMode() : disableDarkMode();
-});
+class GalleryFilter {
+	filtersSelector = ".cs-button";
+	imagesSelector = ".cs-listing";
+	activeClass = "cs-active";
+	hiddenClass = "cs-hidden";
+
+	constructor() {
+		const $filters = document.querySelectorAll(this.filtersSelector);
+		this.$activeFilter = $filters[0];
+		this.$images = document.querySelectorAll(this.imagesSelector);
+
+		this.$activeFilter.classList.add(this.activeClass);
+
+		for (const $filter of $filters) {
+			$filter.addEventListener("click", () => this.onClick($filter));
+		}
+	}
+
+	onClick($filter) {
+		this.filter($filter.dataset.filter);
+
+		const { activeClass } = this;
+
+		this.$activeFilter.classList.remove(activeClass);
+		$filter.classList.add(activeClass);
+
+		this.$activeFilter = $filter;
+	}
+
+	filter(filter) {
+		const showAll = filter == "all";
+		const { hiddenClass } = this;
+
+		for (const $image of this.$images) {
+			const show = showAll || $image.dataset.category == filter;
+			$image.classList.toggle(hiddenClass, !show);
+		}
+	}
+}
+
+new GalleryFilter();
+							
+                                
